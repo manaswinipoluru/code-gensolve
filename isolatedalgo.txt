@@ -1,0 +1,94 @@
+Algorithm:
+
+1. Load CSV Data (`load_csv_data` function):
+   - Input: `csv_path` (string, path to the CSV file)
+   - Output: `grouped_paths` (list of lists, each containing sub-paths)
+   - Steps:
+     a. Read the CSV file into a NumPy array.
+     b. Initialize an empty list `grouped_paths`.
+     c. Loop through each unique identifier in the first column:
+        i.   Filter the data for the current identifier.
+        ii.  Loop through each unique sub-identifier in the filtered data:
+             - Extract the corresponding sub-path.
+             - Append the sub-path to a temporary list `sub_paths`.
+        iii. Append `sub_paths` to `grouped_paths`.
+     d. Return `grouped_paths`.
+
+2. Classify Shape (`classify_shape` function):
+   - Input: `contour` (NumPy array, representing the shape's boundary)
+   - Output: `shape_type` (string, the classified shape type)
+   - Steps:
+     a. Approximate the contour using the Douglas-Peucker algorithm.
+     b. Calculate the area and perimeter of the contour.
+     c. Compute the circularity using the formula: `4 * π * (area / perimeter²)`.
+     d. Classify the shape:
+        i.   If `circularity > 0.7` and the contour has more than 5 points, return "Circle".
+        ii.  If the contour has 4 points, compute the aspect ratio (width/height):
+             - If `0.9 <= aspect_ratio <= 1.1`, return "Square".
+             - Otherwise, return "Rectangle".
+        iii. If the contour has 10 points, return "Star".
+        iv.  For all other cases, return "Polygon".
+
+3. Generate Star Coordinates (`generate_star_coords` function):
+   - Input: `center` (array, x and y coordinates of the center), 
+            `outer_radius` (float, the outer radius), 
+            `inner_radius` (float, the inner radius), 
+            `points` (int, number of star points)
+   - Output: `star_coords` (NumPy array, coordinates of the star)
+   - Steps:
+     a. Initialize an empty list `star_coords`.
+     b. Calculate the angle step as `2 * π / (points * 2)`.
+     c. Loop through `2 * points` times:
+        i.   Calculate the current angle.
+        ii.  Determine the current radius (outer or inner).
+        iii. Compute the x and y coordinates.
+        iv.  Append the coordinates to `star_coords`.
+     d. Append the first coordinate to close the star shape.
+     e. Convert `star_coords` to a NumPy array and return.
+
+4. Process Shapes (`process_shapes` function):
+   - Input: `grouped_paths` (list of lists, each containing sub-paths)
+   - Output: `classified_shapes` (list of tuples, each containing shape coordinates and type)
+   - Steps:
+     a. Initialize an empty list `classified_shapes`.
+     b. Loop through each path in `grouped_paths`:
+        i.   Loop through each set of points in the path:
+             - Create a blank image for drawing.
+             - Draw the shape on the image using polylines.
+             - Find contours in the image.
+             - For each contour, classify the shape using `classify_shape`.
+             - Generate precise shape coordinates using `generate_precise_shape_coords`.
+             - Append the shape and its type to `classified_shapes`.
+     c. Return `classified_shapes`.
+
+5. Visualize Shapes (`visualize_shapes` function):
+   - Input: `original_paths` (list of original paths), 
+            `detected_shapes` (list of classified shapes)
+   - Output: None (plots the shapes)
+   - Steps:
+     a. Create a figure with two subplots for original and detected shapes.
+     b. Plot the original paths in the first subplot.
+     c. Plot the detected shapes in the second subplot.
+     d. Display the plot.
+
+6. Export Shapes to CSV (`export_shapes_to_csv` function):
+   - Input: `shapes` (list of classified shapes), 
+            `output_csv` (string, path to the output CSV file)
+   - Output: None (writes data to the CSV file)
+   - Steps:
+     a. Open the CSV file for writing.
+     b. Write the header row.
+     c. Loop through each shape:
+        i.   If the shape is a "Circle", compute the center and radius, and write to CSV.
+        ii.  For other shapes, write each point to CSV.
+
+7. Main (`main` function):
+   - Input: `input_csv` (string, path to the input CSV file), 
+            `output_csv` (string, path to the output CSV file)
+   - Output: None
+   - Steps:
+     a. Load the paths from the CSV file using `load_csv_data`.
+     b. Process the shapes using `process_shapes`.
+     c. Print the detected shapes.
+     d. Visualize the original and detected shapes using `visualize_shapes`.
+     e. Export the detected shapes to a new CSV file using `export_shapes_to_csv`.

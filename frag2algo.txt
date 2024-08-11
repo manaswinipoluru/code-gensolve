@@ -1,0 +1,96 @@
+Algorithm:
+
+1. Load CSV Data (`load_csv_data` function):
+   - Input: `file_path` (string, path to the CSV file)
+   - Output: `data` (NumPy array, loaded data from the CSV file)
+   - Steps:
+     a. Read the CSV file into a Pandas DataFrame with no header.
+     b. Convert the DataFrame into a NumPy array.
+     c. Return the NumPy array.
+
+2. Fit Segment to Line (`fit_segment_to_line` function):
+   - Input: `XY_coords` (NumPy array, containing X and Y coordinates), 
+            `segment_id` (optional, segment identifier)
+   - Output: `fitted_line` (NumPy array, X coordinates and fitted Y coordinates)
+   - Steps:
+     a. Extract the X coordinates and reshape them into a 2D array.
+     b. Extract the Y coordinates.
+     c. Initialize a `LinearRegression` model.
+     d. Fit the linear regression model using the X and Y coordinates.
+     e. Predict the Y values using the fitted model.
+     f. Combine the original X coordinates with the predicted Y values.
+     g. Return the combined array.
+
+3. Combine Segments (`combine_segments` function):
+   - Input: `data` (NumPy array, loaded data), 
+            `segment_ids` (list of floats, segment identifiers to combine)
+   - Output: `merged_segment` (NumPy array, containing the combined and fitted segment)
+   - Steps:
+     a. Initialize an empty list `combined_points`.
+     b. Loop through each `seg_id` in `segment_ids`:
+        i.   Filter the data for the current `seg_id`.
+        ii.  Extract the X and Y columns and append them to `combined_points`.
+     c. Vertically stack all `combined_points` into a single array.
+     d. Sort the stacked array by X coordinates.
+     e. Fit the combined points to a straight line using `fit_segment_to_line`.
+     f. Create a new segment ID based on the first segment in `segment_ids`.
+     g. Combine the segment ID with the fitted line data.
+     h. Return the merged segment.
+
+4. Process and Visualize (`process_and_visualize` function):
+   - Input: `input_csv` (string, path to the input CSV file), 
+            `output_csv` (string, path to the output CSV file), 
+            `merge_groups` (list of lists, each containing segment IDs to merge)
+   - Output: `data` (NumPy array, original data), 
+             `final_data` (NumPy array, processed data)
+   - Steps:
+     a. Load the data from the input CSV file using `load_csv_data`.
+     b. Create a copy of the data called `updated_data`.
+     c. Loop through each `group` in `merge_groups`:
+        i.   Combine the segments in the group using `combine_segments`.
+        ii.  Remove the original segments from `updated_data`.
+        iii. Append the merged segment to `updated_data`.
+     d. For each unique segment ID in `updated_data`:
+        i.   Extract the segment's X and Y coordinates.
+        ii.  Fit the segment to a straight line using `fit_segment_to_line`.
+        iii. Append the fitted segment to `processed_segments`.
+     e. Vertically stack all `processed_segments` into a single array.
+     f. Save `final_data` to the output CSV file.
+     g. Return the original data and `final_data`.
+
+5. Plot Segments with Labels (`plot_segments_with_labels` function):
+   - Input: `data` (Pandas DataFrame, containing segment data), 
+            `title` (string, plot title), 
+            `ax` (matplotlib axis object)
+   - Output: None (plots the segments with labels)
+   - Steps:
+     a. Define a list of colors.
+     b. Loop through each unique segment ID in `data`:
+        i.   Extract the segment data.
+        ii.  Plot the segment using a color from the list.
+        iii. Add text labels for each point in the segment.
+     c. Set the aspect ratio, title, and axis labels for the plot.
+     d. Add a legend.
+
+6. Plot Data (`plot_data` function):
+   - Input: `data` (NumPy array, containing segment data), 
+            `title` (string, plot title), 
+            `ax` (matplotlib axis object)
+   - Output: None (plots the segments without labels)
+   - Steps:
+     a. Define a list of colors.
+     b. Loop through each unique segment ID in `data`:
+        i.   Extract the segment data.
+        ii.  Plot the segment using a color from the list.
+     c. Set the aspect ratio, title, and axis labels for the plot.
+
+7. Main Execution:
+   - Input: None (parameters are hardcoded)
+   - Output: None (executes the entire processing and visualization pipeline)
+   - Steps:
+     a. Define the paths to the input and output CSV files.
+     b. Define the groups of segments to merge.
+     c. Process and visualize the data using `process_and_visualize`.
+     d. Create a figure with two subplots for side-by-side comparison.
+     e. Plot the original and processed data using `plot_data`.
+     f. Display the plots.

@@ -1,0 +1,34 @@
+# Algorithm for Shape Detection and Classification
+
+1. Load CSV and organize data by path and segment IDs:
+   - Read the CSV file containing segment data.
+   - Group data by unique path and segment IDs.
+   - Store the organized segment points in a list.
+
+2. For each segment:
+   - Draw the segment on a blank canvas.
+   - Extract contours using OpenCV.
+
+3. Classify each contour:
+   - Compute the tolerance and approximate the contour.
+   - Calculate area, perimeter, and circularity of the contour.
+   - Classify shape:
+     - "Rectangle" if 4 vertices.
+     - "Ellipse" if circularity > 0.7.
+     - "Freeform" otherwise.
+
+4. Generate points for each shape:
+   - For "Ellipse":
+     - Calculate center and radius.
+     - Generate points along the ellipse.
+   - For "Rectangle":
+     - Extract and return the corner points.
+   - For "Freeform":
+     - Use the original contour points.
+
+5. Export identified shapes to a new CSV:
+   - Write each shape's details (type, points, etc.) to a CSV file.
+
+6. Visualize the input segments and detected shapes:
+   - Plot original segments in one subplot.
+   - Plot detected shapes (ellipses, rectangles, freeforms) in another subplot.

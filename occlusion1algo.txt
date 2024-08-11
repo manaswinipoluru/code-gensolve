@@ -1,0 +1,80 @@
+Algorithm:
+
+1. Read CSV Data (`read_csv` function):
+   - Input: `csv_path` (string, path to the CSV file)
+   - Output: `path_XYs` (list of lists, each containing sub-paths represented as NumPy arrays)
+   - Steps:
+     a. Load the CSV file into a NumPy array.
+     b. Initialize an empty list `path_XYs`.
+     c. Loop through each unique identifier in the first column:
+        i.   Filter the data for the current identifier.
+        ii.  Loop through each unique sub-identifier in the filtered data:
+             - Extract the corresponding sub-path (X and Y coordinates).
+             - Append the sub-path to a temporary list `XYs`.
+        iii. Append `XYs` to `path_XYs`.
+     d. Return `path_XYs`.
+
+2. Complete and Smooth Curve (`complete_and_smooth_curve` function):
+   - Input: `XY` (NumPy array, X and Y coordinates of a curve), 
+            `num_points` (int, number of points for interpolation),
+            `smoothing` (float, smoothing factor for the spline),
+            `window_length` (int, window length for the Savitzky-Golay filter),
+            `polyorder` (int, polynomial order for the Savitzky-Golay filter)
+   - Output: `smoothed_curve` (NumPy array, X and Y coordinates of the smoothed curve)
+   - Steps:
+     a. Attempt to fit a spline to the curve using the input X and Y coordinates:
+        i.   Use `splprep` to create a spline representation, enforcing periodicity with `per=True`.
+        ii.  Generate new interpolated points along the spline using `splev`.
+        iii. Combine the interpolated X and Y coordinates into a new array.
+     b. Apply the Savitzky-Golay filter to smooth the interpolated points:
+        i.   Smooth the X coordinates.
+        ii.  Smooth the Y coordinates.
+        iii. Combine the smoothed X and Y coordinates into a new array.
+     c. Return the smoothed curve. If an error occurs, return the original coordinates.
+
+3. Plot Curves Side by Side (`plot_curves_side_by_side` function):
+   - Input: `original_XYs` (list of original curves), 
+            `completed_XYs` (list of completed curves)
+   - Output: None (plots the curves side by side)
+   - Steps:
+     a. Create a figure with two subplots for original and completed curves.
+     b. Plot each original curve in the first subplot:
+        i.   Loop through each path in `original_XYs` and plot its X and Y coordinates.
+     c. Plot each completed curve in the second subplot:
+        i.   Loop through each path in `completed_XYs` and plot its X and Y coordinates.
+     d. Set titles and legends for both subplots.
+     e. Display the plot.
+
+4. Save Completed Curves to CSV (`save_csv` function):
+   - Input: `completed_XYs` (list of completed curves), 
+            `output_path` (string, path to the output CSV file)
+   - Output: None (saves the completed curves to a CSV file)
+   - Steps:
+     a. Initialize an empty list `output_data`.
+     b. Loop through each shape in `completed_XYs`:
+        i.   Loop through each sub-path in the shape:
+             - Loop through each point in the sub-path:
+               - Create a row containing the shape index, sub-path index, X coordinate, and Y coordinate.
+               - Append the row to `output_data`.
+        ii. Increment the shape index.
+     c. Save `output_data` to the CSV file using `np.savetxt`.
+
+5. Main Function (`main` function):
+   - Input: `input_csv` (string, path to the input CSV file), 
+            `output_csv` (string, path to the output CSV file)
+   - Output: None (executes the entire pipeline)
+   - Steps:
+     a. Read the original shapes from the input CSV file using `read_csv`.
+     b. Initialize an empty list `completed_shapes`.
+     c. Loop through each shape in `original_shapes`:
+        i.   Complete and smooth each sub-path in the shape using `complete_and_smooth_curve`.
+        ii.  Append the completed shape to `completed_shapes`.
+     d. Plot the original and completed curves side by side using `plot_curves_side_by_side`.
+     e. Save the completed curves to the output CSV file using `save_csv`.
+
+6. Execution (`__main__`):
+   - Input: None (parameters are hardcoded)
+   - Output: None (executes the `main` function)
+   - Steps:
+     a. Define the paths to the input and output CSV files.
+     b. Call the `main` function with the input and output CSV paths.

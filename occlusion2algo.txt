@@ -1,0 +1,72 @@
+Algorithm:
+
+1. Load Paths from CSV (`load_paths_from_csv` function):
+   - Input: `csv_file` (string, path to the CSV file)
+   - Output: `paths` (list of NumPy arrays, each representing a shape or path)
+   - Steps:
+     a. Load the CSV file into a Pandas DataFrame with no header.
+     b. Initialize an empty list `paths`.
+     c. Group the data by the first column (assumed to be the shape identifier).
+     d. For each group:
+        i.   Extract the X and Y coordinates as a NumPy array.
+        ii.  Append the array to `paths`.
+     e. Return `paths`.
+
+2. Complete Missing Parts (`complete_missing_parts` function):
+   - Input: `paths` (list of NumPy arrays, each representing a shape or path)
+   - Output: `completed_paths` (list of NumPy arrays, each representing a completed shape or path)
+   - Steps:
+     a. Initialize an empty list `completed_paths`.
+     b. Loop through each `path` in `paths`:
+        i.   If the path has more than 2 points:
+             - Compute the convex hull of the path.
+             - Use the convex hull vertices to complete the shape.
+        ii.  If the path has 2 or fewer points:
+             - Generate a new set of X coordinates using linear spacing.
+             - Interpolate the Y coordinates based on the new X coordinates.
+             - Combine the new X and Y coordinates into a completed path.
+        iii. Append the completed path to `completed_paths`.
+     c. Return `completed_paths`.
+
+3. Export Completed Paths to CSV (`export_to_csv` function):
+   - Input: `paths` (list of NumPy arrays, each representing a completed shape or path), 
+            `output_file` (string, path to the output CSV file)
+   - Output: None (saves the completed paths to a CSV file)
+   - Steps:
+     a. Initialize an empty list `records`.
+     b. Loop through each `path` in `paths`:
+        i.   Loop through each point in the path:
+             - Create a row containing the shape ID, point ID, X coordinate, and Y coordinate.
+             - Append the row to `records`.
+     c. Convert `records` into a Pandas DataFrame.
+     d. Save the DataFrame to the CSV file without the header.
+
+4. Plot Paths Side by Side (`plot_paths_side_by_side` function):
+   - Input: `original_paths` (list of NumPy arrays, each representing an original shape or path), 
+            `completed_paths` (list of NumPy arrays, each representing a completed shape or path)
+   - Output: None (plots the original and completed paths side by side)
+   - Steps:
+     a. Create a figure with two subplots.
+     b. Plot each original path in the first subplot:
+        i.   Loop through each path in `original_paths` and plot its X and Y coordinates.
+     c. Plot each completed path in the second subplot:
+        i.   Loop through each path in `completed_paths` and plot its X and Y coordinates.
+     d. Set titles and aspect ratios for both subplots.
+     e. Display the plot.
+
+5. Process CSV (`process_csv` function):
+   - Input: `input_csv` (string, path to the input CSV file), 
+            `output_csv` (string, path to the output CSV file)
+   - Output: None (executes the entire processing and visualization pipeline)
+   - Steps:
+     a. Load the original paths from the input CSV file using `load_paths_from_csv`.
+     b. Complete the missing parts of the paths using `complete_missing_parts`.
+     c. Export the completed paths to the output CSV file using `export_to_csv`.
+     d. Plot the original and completed paths side by side using `plot_paths_side_by_side`.
+
+6. Example Usage:
+   - Input: None (parameters are hardcoded)
+   - Output: None (executes the `process_csv` function with specified input and output file paths)
+   - Steps:
+     a. Define the paths to the input and output CSV files.
+     b. Call the `process_csv` function with the input and output CSV paths.
